@@ -1,4 +1,4 @@
-Write a numpy array like a ROOT TTree array :
+Write and Read a numpy array like a ROOT TTree array :
 
 
 ```
