@@ -5,8 +5,9 @@ Write a numpy array like a ROOT TTree array :
 
 OutputNumpyTreeFile h;
 h.open("/tmp/z5.npy");
-int p = 0;
 
+
+int p = 0; // works with int, float, double, .. and string
 h.write_variable("my_p", &p);
 h.write_header();
 
