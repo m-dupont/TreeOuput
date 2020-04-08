@@ -34,45 +34,54 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 #list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 
-FIND_PACKAGE(ROOT REQUIRED COMPONENTS Core)
-INCLUDE_DIRECTORIES(${ROOT_INCLUDE_DIRS})
-SET(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR})
+
 
 MESSAGE("CMAKE_PREFIX_PATH = "  ${CMAKE_PREFIX_PATH})
 MESSAGE("LINK_DIRECTORIES = "  ${LINK_DIRECTORIES})
 
-
-IF(NOT ROOT_INCLUDE_DIRS)
-    MESSAGE("Root not found! Please install Root and make it available in PATH")
-ENDIF()
-
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #set(SOURCE_FILES main.cpp
 #        NumpyFile.cc InputNumpyFile.cc
 #        TreeFile.cc TreeFileManager.cc AsciiFile.cc RootTreeFile.cc RootTreeFile.hh common/File.cc common/File.cc)
-
-
 
 include_directories("common" "impl")
 
 
 set(SOURCE_FILES
         impl/NumpyFile.cc
-        impl/AsciiFile.cc impl/RootTreeFile.cc
+        impl/AsciiFile.cc
         common/TreeFile.cc common/File.cc common/FileExceptions.cc common/TreeFileManager.cc)
 
 
+
+
+
+
+FIND_PACKAGE(ROOT QUIET COMPONENTS Core)
+IF(NOT ROOT_INCLUDE_DIRS)
+    MESSAGE("Root not found! Please install Root and make it available in PATH")
+ELSE()
+    INCLUDE_DIRECTORIES(${ROOT_INCLUDE_DIRS})
+    SET(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR})
+    list(APPEND SOURCE_FILES impl/RootTreeFile.cc)
+
+ENDIF()
+
 add_library(object_lib OBJECT ${SOURCE_FILES})
 
-add_executable(numpy_from_cpp main.cpp $<TARGET_OBJECTS:object_lib>)
-target_link_libraries(numpy_from_cpp ${ROOT_LIBRARIES})
+IF(ROOT_INCLUDE_DIRS)
+    add_executable(numpy_from_cpp main.cpp $<TARGET_OBJECTS:object_lib>)
+    target_link_libraries(numpy_from_cpp ${ROOT_LIBRARIES})
 
-add_executable(benchmark benchmark.cpp $<TARGET_OBJECTS:object_lib> tests/helpers.cpp)
-target_link_libraries(benchmark ${ROOT_LIBRARIES})
+    add_executable(benchmark benchmark.cpp $<TARGET_OBJECTS:object_lib> tests/helpers.cpp)
+    target_link_libraries(benchmark ${ROOT_LIBRARIES})
+ENDIF()
 
 
 #add_executable(test tests/)
+
+add_library(numpy_from_cpp_lib $<TARGET_OBJECTS:object_lib>)
 
 
 set(TESTS_FILES

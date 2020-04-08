@@ -6,11 +6,9 @@
 #include "impl/NumpyFile.hh"
 #include "impl/AsciiFile.hh"
 #include "impl/RootTreeFile.hh"
+#include <cassert>
 
 #include <unordered_map>
-
-
-#include "TROOT.h"
 
 #include <cstring>
 #include <random>
