@@ -1,0 +1,61 @@
+
+
+
+build_gcc:
+    # Use the official gcc image
+    image: gcc
+    before_script:
+    # Install build dependencies
+    - apt-get update && apt-get -y install cmake
+
+    # Build the application
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
+
+build_centos:7:
+    # Use the official gcc image
+    image: centos:7
+    before_script:
+    
+    - yum install -y epel-release  && yum install -y cmake3 make gcc-c++
+    - yum install -y wget libXft libXpm libSM libXext libzstd &&  wget https://root.cern/download/root_v6.20.04.Linux-centos7-x86_64-gcc4.8.tar.gz -q -O /opt/root.tar.gz && tar -xf /opt/root.tar.gz -C /opt
+
+    # Build the application
+    script:
+        - source /opt/root/bin/thisroot.sh
+        - mkdir build
+        - cd build
+        - cmake3 ..
+        - make
+#        - ./tests
+
+build_centos_wihout_root:7:
+    # Use the official gcc image
+    image: centos:7
+    before_script:
+    
+    - yum install -y epel-release  && yum install -y cmake3 make gcc-c++
+    # Build the application
+    script:
+        - mkdir build
+        - cd build
+        - cmake3 ..
+        - make
+#        - ./tests
+
+build_ubuntu:
+    # Use the official gcc image
+    image: ubuntu:18.04
+    before_script:
+    # Install build dependencies
+    - apt-get update && apt-get -y install cmake g++ make
+
+    # Build the application
+    script:
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
