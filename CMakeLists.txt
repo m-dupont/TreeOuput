@@ -51,11 +51,10 @@ include_directories("common" "impl")
 set(SOURCE_FILES
         impl/NumpyFile.cc
         impl/AsciiFile.cc
-        common/TreeFile.cc common/File.cc common/FileExceptions.cc common/TreeFileManager.cc)
-
-
-
-
+        common/TreeFile.cc
+        common/File.cc
+        common/FileExceptions.cc
+        common/TreeFileManager.cc)
 
 
 FIND_PACKAGE(ROOT QUIET COMPONENTS Core)
@@ -65,17 +64,28 @@ ELSE()
     INCLUDE_DIRECTORIES(${ROOT_INCLUDE_DIRS})
     SET(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR})
     list(APPEND SOURCE_FILES impl/RootTreeFile.cc)
+ENDIF()
+
+find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
+
+IF(HDF5_FOUND)
+    MESSAGE("HDF5 found")
+    include_directories(${HDF5_INCLUDE_DIRS})
+    list(APPEND SOURCE_FILES impl/HDF5File.cc)
 
 ENDIF()
+
 
 add_library(object_lib OBJECT ${SOURCE_FILES})
 
 IF(ROOT_INCLUDE_DIRS)
+    IF(HDF5_FOUND)
     add_executable(numpy_from_cpp main.cpp $<TARGET_OBJECTS:object_lib>)
-    target_link_libraries(numpy_from_cpp ${ROOT_LIBRARIES})
+    target_link_libraries(numpy_from_cpp ${ROOT_LIBRARIES} HDF5::HDF5)
 
     add_executable(benchmark benchmark.cpp $<TARGET_OBJECTS:object_lib> tests/helpers.cpp)
-    target_link_libraries(benchmark ${ROOT_LIBRARIES})
+    target_link_libraries(benchmark ${ROOT_LIBRARIES} HDF5::HDF5)
+    ENDIF()
 ENDIF()
 
 

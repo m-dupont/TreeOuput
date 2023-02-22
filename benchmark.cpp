@@ -14,6 +14,7 @@
 #include "impl/RootTreeFile.hh"
 #include "impl/AsciiFile.hh"
 #include "tests/helpers.hh"
+#include "HDF5File.hh"
 
 using namespace std;
 using namespace std::chrono;
@@ -96,7 +97,7 @@ void f()
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(0,choices.size() - 1);
 
-    for (auto i = 0; i < 100000; ++i)
+    for (auto i = 0; i < 1000; ++i)
     {
         j++;
         d = i*2.;
@@ -169,6 +170,12 @@ void g()
 
 int main()
 {
+
+    helpers::remove_file("/tmp/z");
+    Benchmark a("OutputHDF5TreeFile",  f<OutputHDF5TreeFile>);
+    a.run();
+    helpers::remove_file("/tmp/z");
+
     helpers::remove_file("/tmp/z");
     Benchmark b("OutputNumpyTreeFile",  f<OutputNumpyTreeFile>);
     b.run();

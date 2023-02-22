@@ -22,6 +22,7 @@ using namespace std;
 
 
 #include "TreeFileManager.hh"
+#include "HDF5File.hh"
 
 
 void example_save_numpy_file()
@@ -420,6 +421,59 @@ void example_open_manager()
   cout << "example_open_manager:done" << endl;
 }
 
+void example_save_hdf5()
+{
+    cout << "example_save_hdf5:start" << endl;
+    OutputHDF5TreeFile h;
+    h.open("/tmp/p.h5");
+
+    int a = 5;
+    int b = 10;
+    double d = 0;
+    float f = 0;
+    std::string  s = "plop";
+    std::string  cs = "plop";
+    char *c = "wxcvb";
+    char cc[32] = "plop";
+    h.write_variable("a", &a);
+    h.write_variable("b", &b);
+    h.write_variable("d", &d);
+    h.write_variable("f", &f);
+    h.write_variable("s", &s, 32);
+    h.write_variable("sc", &cs);
+    h.write_variable("c", &c);
+    h.write_variable("cc", cc, 32);
+    h.write_header();
+
+    for (auto i = 0; i < 256; ++i)
+    {
+        b = i*10;
+        d = i/2.;
+        f = i/3.;
+        if( i % 2 == 0)
+            s = "pair";
+        else
+            s = "impair";
+
+        strncpy(cc,"1234567890AZERTYUIOPQSDFGHJKLMWXCVBN", i%30 + 1);
+        cc[i%30 + 2] = '\0';
+
+        cs += "e";
+
+        h.fill();
+    }
+
+
+
+    h.close();
+
+
+
+
+    cout << "example_save_hdf5:done" << endl;
+
+}
+
 int main()
 {
   std::cout << "Hello, World!" << std::endl;
@@ -432,10 +486,12 @@ int main()
 
 //  example_save_manager();
 
-  example_save_and_open_numpy_file();
+//  example_save_and_open_numpy_file();
 //  example_save_and_open_root_file();
 
 //  example_save_manager();
 //  example_open_manager();
+
+    example_save_hdf5();
 
 }
