@@ -433,15 +433,17 @@ void example_save_hdf5()
     float f = 0;
     std::string  s = "plop";
     std::string  cs = "plop";
-    char *c = "wxcvb";
+//    const char *c = "wxcvb";
     char cc[32] = "plop";
     h.write_variable("a", &a);
     h.write_variable("b", &b);
     h.write_variable("d", &d);
     h.write_variable("f", &f);
     h.write_variable("s", &s, 32);
-    h.write_variable("sc", &cs);
-    h.write_variable("c", &c);
+//    h.write_variable("ss", &s);
+//    h.write_variable("sc", &cs);
+//    h.write_variable("c", c);
+//    h.write_variable("c", c);
     h.write_variable("cc", cc, 32);
     h.write_header();
 

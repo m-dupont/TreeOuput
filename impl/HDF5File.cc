@@ -8,6 +8,38 @@
 using namespace H5;
 using namespace std;
 
+
+HDF5Tree::HDF5Tree() :  m_nb_elements(0)
+{
+//    cout << "HDF5Tree" << endl;
+//    fill_maps<int>(PredType::NATIVE_INT);
+    fill_maps<uint8_t>(PredType::NATIVE_UINT8);
+    fill_maps<uint16_t>(PredType::NATIVE_UINT16);
+    fill_maps<uint32_t>(PredType::NATIVE_UINT32);
+    fill_maps<uint64_t>(PredType::NATIVE_UINT64);
+
+
+    fill_maps<int8_t>(PredType::NATIVE_INT8);
+    fill_maps<int16_t>(PredType::NATIVE_INT16);
+    fill_maps<int32_t>(PredType::NATIVE_INT32);
+    fill_maps<int64_t>(PredType::NATIVE_INT64);
+
+    H5::StrType t(H5::PredType::C_S1, H5T_VARIABLE);
+    m_tmap_cppToHDF5.emplace(typeid(std::string), t);
+    m_tmap_cppToHDF5.emplace(typeid(char*), t);
+    m_tmap_cppToHDF5.emplace(typeid(char[]), t);
+
+//    cout << "t char[] = " << typeid(char[]).name() << endl;
+//    cout << "t char* = " << typeid(char*).name() << endl;
+//    cout << "t char = " << typeid(char).name() << endl;
+
+    fill_maps<double>(PredType::NATIVE_DOUBLE);
+    fill_maps<long double>(PredType::NATIVE_LDOUBLE);
+    fill_maps<float>(PredType::NATIVE_FLOAT);
+//    fill_maps<short>(PredType::NATIVE_SHORT);
+//    fill_maps<long>(PredType::NATIVE_LONG);
+}
+
 bool OutputHDF5TreeFile::is_open()
 {
     return false;
@@ -101,19 +133,30 @@ void OutputHDF5TreeFile::fill()
             dataset->write(d.m_pointer_to_data, d.m_type, m_dataspace, fspace);
         } else
         {
-            char *p_data = (char*)d.m_pointer_to_data;
-            auto current_nb_characters = strlen(p_data);
+            if (d.m_type_index == typeid(string))
+            {
+//                cout << "\t\tm_type_index = " << "string" << endl;
+
+                const auto *p_s = (const string*) d.m_pointer_to_data;
+                dataset->write( p_s->c_str(), d.m_type, m_dataspace, fspace);
+            }
+            else
+            {
+                char *p_data = (char*)d.m_pointer_to_data;
+                auto current_nb_characters = strlen(p_data);
 //            cout << " p_data = " << p_data << endl;
 //            for(size_t i = current_nb_characters; i < d.m_nb_characters; ++i)
 //                p_data[i] = '\0';
 //            cout << " p_data = " << p_data << endl;
 
 
-            string s(p_data); // copy of the data, :-(
-            s.resize(current_nb_characters , '\0');
+                string s(p_data); // copy of the data, :-(
+                s.resize(current_nb_characters , '\0');
 
 
-            dataset->write(s, d.m_type, m_dataspace, fspace);
+                dataset->write(s, d.m_type, m_dataspace, fspace);
+            }
+
         }
 
 
@@ -133,7 +176,7 @@ void OutputHDF5TreeFile::write_variable(const std::string &name, const void *p, 
 
 void OutputHDF5TreeFile::write_variable(const std::string &name, const std::string *p, size_t nb_char)
 {
-    this->register_variable(name, p);
+    this->register_variable(name, p, nb_char);
 }
 
 void OutputHDF5TreeFile::write_variable(const std::string &name, const char *p, size_t nb_char)
@@ -161,6 +204,13 @@ void HDF5Tree::register_variable(const std::string &name, const void *p, std::ty
 void HDF5Tree::register_variable(const std::string &name, const std::string *p, size_t nb_char)
 {
 
+//    cout << "HDF5Tree::register_variable: name = '" << name << " 'string'" << endl;
+    H5::StrType t(H5::PredType::C_S1, nb_char);
+    type_index t_index = typeid(string);
+    HDF5Data d(p, name, t, t_index);
+    d.m_nb_characters = nb_char;
+    m_vector_of_pointer_to_data.push_back(d);
+
 }
 
 void HDF5Tree::register_variable(const std::string &name, const char *p, size_t nb_char)
@@ -173,33 +223,4 @@ void HDF5Tree::register_variable(const std::string &name, const char *p, size_t 
     data.m_nb_characters = nb_char;
 }
 
-HDF5Tree::HDF5Tree() :  m_nb_elements(0)
-{
-//    cout << "HDF5Tree" << endl;
-//    fill_maps<int>(PredType::NATIVE_INT);
-    fill_maps<uint8_t>(PredType::NATIVE_UINT8);
-    fill_maps<uint16_t>(PredType::NATIVE_UINT16);
-    fill_maps<uint32_t>(PredType::NATIVE_UINT32);
-    fill_maps<uint64_t>(PredType::NATIVE_UINT64);
 
-
-    fill_maps<int8_t>(PredType::NATIVE_INT8);
-    fill_maps<int16_t>(PredType::NATIVE_INT16);
-    fill_maps<int32_t>(PredType::NATIVE_INT32);
-    fill_maps<int64_t>(PredType::NATIVE_INT64);
-
-    H5::StrType t(H5::PredType::C_S1, H5T_VARIABLE);
-    m_tmap_cppToHDF5.emplace(typeid(std::string), t);
-    m_tmap_cppToHDF5.emplace(typeid(char*), t);
-    m_tmap_cppToHDF5.emplace(typeid(char[]), t);
-
-//    cout << "t char[] = " << typeid(char[]).name() << endl;
-//    cout << "t char* = " << typeid(char*).name() << endl;
-//    cout << "t char = " << typeid(char).name() << endl;
-
-    fill_maps<double>(PredType::NATIVE_DOUBLE);
-    fill_maps<long double>(PredType::NATIVE_LDOUBLE);
-    fill_maps<float>(PredType::NATIVE_FLOAT);
-//    fill_maps<short>(PredType::NATIVE_SHORT);
-//    fill_maps<long>(PredType::NATIVE_LONG);
-}

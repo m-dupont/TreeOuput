@@ -58,10 +58,15 @@ class Benchmark
       auto sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
       auto stdev = std::sqrt(sq_sum / values.size());
 
+      double min = *std::min_element(values.begin(), values.end());
+      double max = *std::max_element(values.begin(), values.end());
+
 
 
 //      cout << "[" << m_name <<"]" << "Start execute function done, time = " <<  duration.count() / 10. << "ms" << endl;
-      cout << "[" << m_name <<"]" << "Start execute function done, time = " <<  mean << "ms, std = " << stdev << " ms" << endl;
+      cout << "[" << m_name <<"]" << "Start execute function done, time = " <<
+      mean << "ms, std = " <<
+      stdev << " ms " << "(min = " << min << ", max = "<< max << " )"  << endl;
   }
 
  private:
@@ -97,7 +102,7 @@ void f()
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(0,choices.size() - 1);
 
-    for (auto i = 0; i < 1000; ++i)
+    for (auto i = 0; i < 10000; ++i)
     {
         j++;
         d = i*2.;
