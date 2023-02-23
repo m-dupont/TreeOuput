@@ -102,7 +102,7 @@ void f()
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(0,choices.size() - 1);
 
-    for (auto i = 0; i < 10000; ++i)
+    for (auto i = 0; i < 100000; ++i)
     {
         j++;
         d = i*2.;
@@ -194,8 +194,8 @@ int main()
     d.run();
     helpers::remove_file("/tmp/z");
 //
-    Benchmark e("TreeFileManager",  g);
-    e.run();
+//    Benchmark e("TreeFileManager",  g);
+//    e.run();
 
     return 0;
 }

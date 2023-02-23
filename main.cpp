@@ -427,16 +427,19 @@ void example_save_hdf5()
     OutputHDF5TreeFile h;
     h.open("/tmp/p.h5");
 
-    int a = 5;
-    int b = 10;
+    uint32_t a = 5;
+    int i = 10;
     double d = 0;
     float f = 0;
     std::string  s = "plop";
     std::string  cs = "plop";
 //    const char *c = "wxcvb";
     char cc[32] = "plop";
+    bool b = false;
     h.write_variable("a", &a);
     h.write_variable("b", &b);
+    h.write_variable("aa", &a);
+    h.write_variable("i", &i);
     h.write_variable("d", &d);
     h.write_variable("f", &f);
     h.write_variable("s", &s, 32);
@@ -447,15 +450,23 @@ void example_save_hdf5()
     h.write_variable("cc", cc, 32);
     h.write_header();
 
-    for (auto i = 0; i < 256; ++i)
+    for (i = 0; i < 256000; ++i)
     {
+//        cout << "i = " << i << endl;
         b = i*10;
         d = i/2.;
         f = i/3.;
         if( i % 2 == 0)
+        {
             s = "pair";
+            b = true;
+        }
         else
+        {
             s = "impair";
+            b = false;
+        }
+
 
         strncpy(cc,"1234567890AZERTYUIOPQSDFGHJKLMWXCVBN", i%30 + 1);
         cc[i%30 + 2] = '\0';

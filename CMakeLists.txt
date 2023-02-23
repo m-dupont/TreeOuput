@@ -39,11 +39,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 MESSAGE("CMAKE_PREFIX_PATH = "  ${CMAKE_PREFIX_PATH})
 MESSAGE("LINK_DIRECTORIES = "  ${LINK_DIRECTORIES})
 
-#set(CMAKE_VERBOSE_MAKEFILE ON)
-
-#set(SOURCE_FILES main.cpp
-#        NumpyFile.cc InputNumpyFile.cc
-#        TreeFile.cc TreeFileManager.cc AsciiFile.cc RootTreeFile.cc RootTreeFile.hh common/File.cc common/File.cc)
 
 include_directories("common" "impl")
 
